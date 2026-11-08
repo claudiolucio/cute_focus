@@ -1,0 +1,177 @@
+/* See the Tailwind configuration guide for advanced usage
+   https://tailwindcss.com/docs/configuration */
+
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/cute_focus_web";
+
+/* A Tailwind plugin that makes "hero-#{ICON}" classes available.
+   The heroicons installation itself is managed by your mix.exs */
+@plugin "../vendor/heroicons";
+
+/* daisyUI Tailwind Plugin. */
+@plugin "daisyui/packages/bundle/daisyui" {
+  themes: false;
+}
+
+/* daisyUI theme plugin.
+  We ship with two themes, a light one inspired on Phoenix colors and a dark one inspired
+  on Elixir colors. Build your own at: https://daisyui.com/theme-generator/ */
+@plugin "daisyui/packages/bundle/daisyui-theme" {
+  name: "dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(30.33% 0.016 252.42);
+  --color-base-200: oklch(25.26% 0.014 253.1);
+  --color-base-300: oklch(20.15% 0.012 254.09);
+  --color-base-content: oklch(97.807% 0.029 256.847);
+  --color-primary: oklch(58% 0.233 277.117);
+  --color-primary-content: oklch(96% 0.018 272.314);
+  --color-secondary: oklch(58% 0.233 277.117);
+  --color-secondary-content: oklch(96% 0.018 272.314);
+  --color-accent: oklch(60% 0.25 292.717);
+  --color-accent-content: oklch(96% 0.016 293.756);
+  --color-neutral: oklch(37% 0.044 257.287);
+  --color-neutral-content: oklch(98% 0.003 247.858);
+  --color-info: oklch(58% 0.158 241.966);
+  --color-info-content: oklch(97% 0.013 236.62);
+  --color-success: oklch(60% 0.118 184.704);
+  --color-success-content: oklch(98% 0.014 180.72);
+  --color-warning: oklch(66% 0.179 58.318);
+  --color-warning-content: oklch(98% 0.022 95.277);
+  --color-error: oklch(58% 0.253 17.585);
+  --color-error-content: oklch(96% 0.015 12.422);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.21875rem;
+  --size-field: 0.21875rem;
+  --border: 1.5px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@plugin "daisyui/packages/bundle/daisyui-theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(98% 0 0);
+  --color-base-200: oklch(96% 0.001 286.375);
+  --color-base-300: oklch(92% 0.004 286.32);
+  --color-base-content: oklch(21% 0.006 285.885);
+  --color-primary: oklch(70% 0.213 47.604);
+  --color-primary-content: oklch(98% 0.016 73.684);
+  --color-secondary: oklch(55% 0.027 264.364);
+  --color-secondary-content: oklch(98% 0.002 247.839);
+  --color-accent: oklch(0% 0 0);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(44% 0.017 285.786);
+  --color-neutral-content: oklch(98% 0 0);
+  --color-info: oklch(62% 0.214 259.815);
+  --color-info-content: oklch(97% 0.014 254.604);
+  --color-success: oklch(70% 0.14 182.503);
+  --color-success-content: oklch(98% 0.014 180.72);
+  --color-warning: oklch(66% 0.179 58.318);
+  --color-warning-content: oklch(98% 0.022 95.277);
+  --color-error: oklch(58% 0.253 17.585);
+  --color-error-content: oklch(96% 0.015 12.422);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.21875rem;
+  --size-field: 0.21875rem;
+  --border: 1.5px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Add variants based on LiveView classes */
+@custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
+@custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
+@custom-variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+
+/* Use the data attribute for dark mode  */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Make LiveView wrapper divs transparent for layout */
+[data-phx-session], [data-phx-teleported-src] { display: contents }
+
+/* This file is for your main application CSS */
+
+.pixel-sprite { display: grid; grid-template-columns: repeat(3, 5px); grid-template-rows: repeat(3, 5px); gap: 1px; width: max-content; image-rendering: pixelated; }
+.pixel-sprite i { background: transparent; }
+.pixel-sprite i:nth-child(2), .pixel-sprite i:nth-child(4), .pixel-sprite i:nth-child(5), .pixel-sprite i:nth-child(6), .pixel-sprite i:nth-child(8) { background: #f08b37; }
+.pixel-sprite[data-sprite="book"] i:nth-child(5), .pixel-sprite[data-sprite="book"] i:nth-child(8), .pixel-sprite[data-sprite="book"] i:nth-child(9) { background: #ffd15a; }
+.pixel-sprite[data-sprite="pen"] i:nth-child(4), .pixel-sprite[data-sprite="pen"] i:nth-child(7) { background: #80c6d5; }
+.pixel-sprite[data-sprite="star"] i:nth-child(1), .pixel-sprite[data-sprite="star"] i:nth-child(3), .pixel-sprite[data-sprite="star"] i:nth-child(7), .pixel-sprite[data-sprite="star"] i:nth-child(9) { background: #ef7996; }
+.pixel-sprite[data-sprite="lamp"] i:nth-child(1), .pixel-sprite[data-sprite="lamp"] i:nth-child(2), .pixel-sprite[data-sprite="lamp"] i:nth-child(3) { background: #8ba6ef; }
+.pixel-sprite[data-sprite="note"] i:nth-child(1), .pixel-sprite[data-sprite="note"] i:nth-child(4), .pixel-sprite[data-sprite="note"] i:nth-child(7) { background: #8fd39c; }
+.pixel-sprite[data-sprite="clock"] i:nth-child(2), .pixel-sprite[data-sprite="clock"] i:nth-child(8) { background: #c19aeb; }
+
+.room-scene { position: relative; height: 360px; image-rendering: pixelated; background: #51433e; }
+.room-wall { position: absolute; inset: 0 0 92px; background: #b87e63; background-image: linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px); background-size: 18px 18px; }
+.room-floor { position: absolute; inset: auto 0 0; height: 94px; background: repeating-linear-gradient(90deg, #9b674d 0 42px, #89583f 42px 45px); border-top: 7px solid #e5ad72; }
+.room-window { position: absolute; top: 28px; left: 12%; width: 105px; height: 120px; border: 8px solid #f5d8a4; background: #26354c; box-shadow: inset 0 0 0 5px #4a5a70; }
+.room-window::before, .room-window::after { content: ""; position: absolute; background: #f5d8a4; }
+.room-window::before { width: 7px; inset: 0 auto 0 50%; transform: translateX(-50%); }
+.room-window::after { height: 7px; inset: 50% 0 auto; transform: translateY(-50%); }
+.room-moon { position: absolute; top: 13px; right: 14px; width: 19px; height: 19px; background: #ffe59d; box-shadow: 5px 5px 0 #26354c; }
+.room-star { position: absolute; width: 4px; height: 4px; background: #ffefc2; }
+.room-star-one { top: 22px; left: 17px; }.room-star-two { bottom: 20px; right: 19px; }
+.room-poster { position: absolute; top: 35px; right: 12%; padding: 10px; border: 5px solid #f5d8a4; background: #e77f65; color: #ffefd0; font-size: 10px; font-weight: 900; line-height: 1.05; letter-spacing: .08em; text-align: center; }
+.room-desk { position: absolute; right: 14%; bottom: 81px; width: 176px; height: 72px; border-bottom: 12px solid #4b3028; background: #795040; box-shadow: 0 12px 0 -4px #342620; }
+.room-screen { position: absolute; bottom: 41px; left: 37px; width: 88px; height: 61px; border: 7px solid #352d2b; background: #1c2930; color: #a9e4c3; font-family: monospace; text-align: center; }
+.room-screen::after { content: ""; position: absolute; bottom: -17px; left: 29px; width: 18px; height: 10px; background: #352d2b; }.room-screen p { margin: 16px 2px 0; font-size: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.room-screen-dot { display: block; width: 7px; height: 7px; margin: 7px; background: #f0a158; }
+.room-lamp { position: absolute; right: 10px; top: -34px; width: 30px; height: 45px; }.room-lamp i { position: absolute; top: 0; width: 30px; height: 16px; background: #edc261; clip-path: polygon(15% 0, 85% 0, 100% 100%, 0 100%); }.room-lamp b { position: absolute; top: 16px; left: 13px; width: 5px; height: 29px; background: #4b3028; }
+.room-character { position: absolute; right: 43%; bottom: 84px; width: 44px; height: 87px; }.room-hair { position: absolute; top: 0; left: 5px; width: 34px; height: 30px; background: #4a3028; }.room-face { position: absolute; top: 16px; left: 8px; width: 28px; height: 27px; background: #efb583; }.room-face i { position: absolute; top: 11px; width: 4px; height: 4px; background: #4a3028; }.room-face i:first-child { left: 6px; }.room-face i:last-child { right: 6px; }.room-shirt { position: absolute; bottom: 0; left: 4px; width: 37px; height: 44px; background: #d77566; }
+.room-plant { position: absolute; left: 34%; bottom: 88px; width: 44px; height: 72px; }.room-plant i { position: absolute; width: 16px; height: 33px; background: #4f9d68; }.room-plant i:nth-child(1) { left: 4px; top: 2px; transform: rotate(-30deg); }.room-plant i:nth-child(2) { left: 17px; top: 0; }.room-plant i:nth-child(3) { right: 2px; top: 8px; transform: rotate(28deg); }.room-plant b { position: absolute; bottom: 0; left: 8px; width: 29px; height: 23px; background: #d07b4c; }
+.room-books { position: absolute; left: 9%; bottom: 88px; display: flex; align-items: end; height: 65px; }.room-books i { display: block; width: 12px; margin-right: 3px; background: #e8c367; }.room-books i:nth-child(1) { height: 42px; }.room-books i:nth-child(2) { height: 56px; background: #d6675c; }.room-books i:nth-child(3) { height: 48px; background: #6c90a8; }.room-books i:nth-child(4) { height: 35px; background: #75996f; }
+.room-cat { position: absolute; left: 47%; bottom: 88px; width: 48px; height: 35px; background: #dc8d4e; }.room-cat::before, .room-cat::after { content: ""; position: absolute; top: -13px; border-style: solid; border-width: 0 9px 15px; border-color: transparent transparent #dc8d4e; }.room-cat::before { left: 4px; }.room-cat::after { right: 4px; }.room-cat i, .room-cat b { position: absolute; top: 12px; width: 4px; height: 4px; background: #46312a; }.room-cat i { left: 13px; }.room-cat b { left: 29px; }
+.room-status { position: absolute; left: 20px; bottom: 17px; color: #ffe8c7; font-size: 11px; font-weight: 900; letter-spacing: .06em; }.room-status-dot { display: inline-block; width: 8px; height: 8px; margin-right: 7px; background: #ef9a48; }.room-scene[data-room-mood="studying"] .room-status-dot { background: #75d69c; }.room-scene[data-room-mood="celebrating"] .room-character { animation: room-bounce 1.4s steps(2, end) infinite; }.room-scene[data-room-mood="studying"] .room-screen-dot { animation: room-blink .9s steps(2, end) infinite; }
+@keyframes room-bounce { 50% { transform: translateY(-6px); } } @keyframes room-blink { 50% { opacity: .25; } }
+
+/* Original handheld creature-adventure palette and hard pixel edges. */
+.room-scene { height: 384px; border-radius: 0; background: #6ca8ad; }
+.room-wall { inset: 0 0 106px; background: #84c7c3; background-image: linear-gradient(90deg, #71b7b5 2px, transparent 2px), linear-gradient(#a0dad1 2px, transparent 2px); background-size: 20px 20px; }
+.room-floor { height: 108px; border-top: 8px solid #d9c276; background: repeating-linear-gradient(90deg, #c69a59 0 38px, #b78850 38px 42px); }
+.room-window { top: 25px; left: 11%; width: 116px; height: 128px; border: 8px solid #f7e5ad; background: #315882; box-shadow: inset 0 0 0 5px #1d4269, 6px 6px 0 #537d82; }
+.room-moon { width: 22px; height: 22px; background: #fff0a9; box-shadow: 6px 6px 0 #315882; }
+.room-poster { top: 30px; right: 12%; border-color: #f7e5ad; border-radius: 0; background: #df5c58; box-shadow: 5px 5px 0 #9d3d42; font-family: monospace; }
+.room-desk { right: 13%; bottom: 93px; width: 186px; height: 72px; border-radius: 0; border-bottom: 12px solid #55372a; background: #996143; box-shadow: 0 12px 0 -4px #3d2b24; }
+.room-screen { border-color: #253540; background: #162d36; color: #e9f5a7; box-shadow: 4px 4px 0 #11232b; }.room-screen-dot { background: #f77e54; }
+.room-lamp i { background: #f3d463; }.room-lamp b { background: #55372a; }
+.room-character { right: 44%; bottom: 96px; filter: drop-shadow(4px 4px 0 #49362d); }.room-hair { background: #452e2a; }.room-face { background: #f3b47c; }.room-face i { background: #2b2523; }.room-shirt { background: #547bd6; }
+.room-plant { left: 33%; bottom: 100px; }.room-plant i { background: #4fa56e; }.room-plant b { background: #cf7847; }
+.room-books { left: 8%; bottom: 100px; }.room-cat { left: 47%; bottom: 100px; width: 50px; height: 36px; background: #f0b34f; box-shadow: 5px 5px 0 #a65d39; }.room-cat::before, .room-cat::after { border-color: transparent transparent #f0b34f; }.room-cat i, .room-cat b { background: #313044; }.room-cat::after { right: 5px; }.room-cat::before { left: 5px; }
+.room-status { bottom: 19px; color: #fff4c3; font-family: monospace; text-shadow: 2px 2px 0 #473326; }.room-status-dot { background: #f5e06d; box-shadow: 2px 2px 0 #a26738; }
+.room-scene[data-room-mood="studying"] .room-wall { background-color: #6097b3; }.room-scene[data-room-mood="celebrating"] .room-wall { background-color: #9ecf8f; }
+
+.room-shelf { position: absolute; top: 34px; left: 39%; width: 82px; height: 47px; border: 5px solid #664537; background: #9b674d; box-shadow: 4px 4px 0 #4b342d; }.room-shelf::after { content: ""; position: absolute; top: 20px; left: 0; width: 72px; height: 5px; background: #664537; }.room-shelf i { position: absolute; bottom: 25px; width: 9px; height: 14px; background: #f0c664; }.room-shelf i:nth-child(1) { left: 10px; }.room-shelf i:nth-child(2) { left: 22px; background: #dc6b58; }.room-shelf i:nth-child(3) { left: 34px; background: #6d91bc; }.room-shelf b { position: absolute; bottom: 5px; right: 10px; width: 15px; height: 9px; background: #85c970; }
+.room-bed { position: absolute; left: 9%; bottom: 101px; width: 118px; height: 64px; border: 7px solid #503b37; background: #d97569; box-shadow: 6px 6px 0 #6d4a3e; }.room-bed i { position: absolute; top: 6px; left: 7px; width: 37px; height: 19px; background: #f7e6bb; }.room-bed b { position: absolute; right: 0; bottom: 0; width: 68px; height: 31px; background: #e9b866; }.room-bed em { position: absolute; right: 19px; bottom: 9px; width: 10px; height: 10px; background: #f9d58a; }
+.room-rug { position: absolute; left: 26%; bottom: 12px; width: 156px; height: 47px; border: 5px solid #e3bd67; background: repeating-linear-gradient(90deg, #d96e62 0 13px, #e8876a 13px 26px); box-shadow: 4px 4px 0 #815349; }
+
+.room-scene { aspect-ratio: 3 / 2; height: auto; min-height: 300px; background: #315882; }
+.room-asset { position: absolute; display: block; max-width: none; image-rendering: pixelated; image-rendering: crisp-edges; pointer-events: none; }
+.room-background { inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; }
+.room-window-sprite { top: 5%; left: 8%; z-index: 1; width: 23%; }
+.room-bed-sprite { bottom: 11%; left: 5%; z-index: 2; width: 25%; }
+.room-rug-sprite { bottom: 2%; left: 24%; z-index: 1; width: 29%; }
+.room-shelf-sprite { top: 7%; left: 38%; z-index: 1; width: 24%; }
+.room-desk-sprite { right: 5%; bottom: 13%; z-index: 4; width: 32%; }
+.room-character-sprite { right: 36%; bottom: 14%; z-index: 5; width: 19%; }
+.room-plant-sprite { left: 32%; bottom: 19%; z-index: 4; width: 12%; }
+.room-books-sprite { left: 8%; bottom: 20%; z-index: 4; width: 12%; }
+.room-poster-sprite { top: 7%; right: 10%; z-index: 2; width: 11%; }
+.room-companion-sprite { left: 48%; bottom: 17%; z-index: 6; width: 11%; }
+.room-status { z-index: 10; }
+.room-level { position: absolute; top: 14px; right: 14px; z-index: 10; border: 3px solid #2d2727; background: #f9e8a8; box-shadow: 3px 3px 0 #2d2727; color: #634234; font-family: monospace; font-size: 12px; font-weight: 900; letter-spacing: .08em; padding: 5px 7px; }
+.room-plant-sprite, .room-books-sprite, .room-poster-sprite, .room-companion-sprite { animation: room-unlock .5s steps(3, end); }
+@keyframes room-unlock { 0% { opacity: 0; transform: scale(.6); } 100% { opacity: 1; transform: scale(1); } }
+
+@media (max-width: 480px) {
+  .room-scene { min-height: 250px; }
+  .room-status { font-size: 9px; }
+}
