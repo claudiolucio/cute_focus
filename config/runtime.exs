@@ -79,6 +79,16 @@ if config_env() == :prod do
     password: smtp_password,
     port: 587,
     tls: :always,
+    tls_options: [
+      versions: [:"tlsv1.2", :"tlsv1.3"],
+      verify: :verify_peer,
+      cacerts: :public_key.cacerts_get(),
+      server_name_indication: ~c"smtp.gmail.com",
+      depth: 99,
+      customize_hostname_check: [
+        match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+      ]
+    ],
     auth: :always
 
   config :cute_focus,
