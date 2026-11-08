@@ -59,7 +59,8 @@ defmodule CuteFocus.Focus do
     today_seconds =
       sessions
       |> Enum.filter(&(DateTime.to_date(&1.started_at) == Date.utc_today()))
-      |> Enum.sum_by(& &1.duration_seconds)
+      |> Enum.map(& &1.duration_seconds)
+      |> Enum.sum()
 
     favorite_activity =
       sessions
