@@ -26,6 +26,8 @@ config :cute_focus,
 
 config :swoosh, :api_client, false
 
+config :cute_focus, :mailer_from, {"CuteFocus", "contact@example.com"}
+
 # Configure the endpoint
 config :cute_focus, CuteFocusWeb.Endpoint,
   url: [host: "localhost"],

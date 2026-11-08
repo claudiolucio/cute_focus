@@ -46,6 +46,13 @@ if config_env() == :dev do
 end
 
 if config_env() == :prod do
+  resend_api_key =
+    System.get_env("RESEND_API_KEY") ||
+      raise """
+      environment variable RESEND_API_KEY is missing.
+      Create a sending-only Resend API key and configure it in Heroku.
+      """
+
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """
@@ -57,6 +64,16 @@ if config_env() == :prod do
     url: database_url,
     ssl: true,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
+
+  config :swoosh, :api_client, Swoosh.ApiClient.Finch
+
+  config :cute_focus, CuteFocus.Mailer,
+    adapter: Swoosh.Adapters.Resend,
+    api_key: resend_api_key
+
+  config :cute_focus,
+         :mailer_from,
+         {"CuteFocus", System.get_env("MAILER_FROM", "onboarding@resend.dev")}
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

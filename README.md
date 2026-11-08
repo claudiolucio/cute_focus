@@ -43,6 +43,17 @@ heroku config:set OPENAI_API_KEY="your-key" --app cute-focus
 
 `OPENAI_API_KEY` is optional. Do not set `OPENCODE_URL` for the local OpenCode server on Heroku: it is intentionally bound to your local machine.
 
+### Email authentication
+
+Production sends registration and login links through [Resend](https://resend.com). Configure a sending-only API key and sender address before deploying:
+
+```bash
+heroku config:set RESEND_API_KEY="your-sending-key" --app cute-focus
+heroku config:set MAILER_FROM="noreply@mail.example.com" --app cute-focus
+```
+
+Until a sending domain is verified in Resend, use `MAILER_FROM="onboarding@resend.dev"` only to test delivery to the email address associated with the Resend account.
+
 Commit the changes and deploy:
 
 ```bash

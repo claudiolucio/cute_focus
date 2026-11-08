@@ -9,7 +9,7 @@ defmodule CuteFocus.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"CuteFocus", "contact@example.com"})
+      |> from(Application.fetch_env!(:cute_focus, :mailer_from))
       |> subject(subject)
       |> text_body(body)
 
