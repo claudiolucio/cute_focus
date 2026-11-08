@@ -65,7 +65,7 @@ if config_env() == :prod do
     ssl: true,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
 
-  config :swoosh, :api_client, Swoosh.ApiClient.Finch
+  config :swoosh, :api_client, Swoosh.ApiClient.Req
 
   config :cute_focus, CuteFocus.Mailer,
     adapter: Swoosh.Adapters.Resend,
