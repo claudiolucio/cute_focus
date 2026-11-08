@@ -7,9 +7,22 @@ defmodule CuteFocusWeb.FocusLiveTest do
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
     {:ok, view, _html} = live(conn, ~p"/")
     assert has_element?(view, "#focus-timer")
+    assert has_element?(view, "#focus-timer", "01:00:00")
+    assert has_element?(view, "#duration-form")
     assert has_element?(view, "#activities")
     assert has_element?(view, "#start-focus")
     assert has_element?(view, "#focus-audio[phx-hook='FocusAudio']")
+  end
+
+  test "updates the focus duration", %{conn: conn} do
+    %{conn: conn} = register_and_log_in_user(%{conn: conn})
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    view
+    |> form("#duration-form", %{"session" => %{"hours" => "1", "minutes" => "30"}})
+    |> render_change()
+
+    assert has_element?(view, "#focus-timer", "01:30:00")
   end
 
   test "changes the selected activity", %{conn: conn} do

@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cute_focus}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  migrate:
+    build: .
+    environment: &app_environment
+      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/cute_focus}
+      DATABASE_SSL: "false"
+      PHX_HOST: ${PHX_HOST:-localhost}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE in .env}
+      SMTP_USERNAME: ${SMTP_USERNAME:?set SMTP_USERNAME in .env}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?set SMTP_PASSWORD in .env}
+      MAILER_FROM: ${MAILER_FROM:?set MAILER_FROM in .env}
+    command: ["bin/cute_focus", "eval", "CuteFocus.Release.migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    build: .
+    ports:
+      - "4000:4000"
+    environment: *app_environment
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  postgres_data:

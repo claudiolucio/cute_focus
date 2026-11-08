@@ -20,6 +20,22 @@ The local default is `postgres` at `localhost:5432` without a password, matching
 
 Run `mix ecto.migrate` after pulling new migrations. The former SQLite database files are not used or imported automatically.
 
+## Docker
+
+The production image is built from `Dockerfile`; `compose.yaml` starts the application with PostgreSQL and runs migrations before the web process. Copy the environment template, generate a secret, and fill in the Gmail app password before starting it:
+
+```bash
+cp .env.example .env
+mix phx.gen.secret
+docker compose up --build
+```
+
+Set the generated value as `SECRET_KEY_BASE` in `.env`. The application is then available at `http://localhost:4000`.
+
+## CI/CD
+
+GitHub Actions runs the test suite for pull requests and pushes to `main` or `master`. A push to either branch also publishes immutable SHA-tagged and `latest` images to `ghcr.io/<github-owner>/cute-focus`. Add the project to GitHub and push the branch to activate the workflow. Configure the GitHub package visibility in GitHub if the image should be public.
+
 ## Heroku deployment
 
 The repository includes a `Procfile`, release migration task, and `elixir_buildpack.config` for Heroku. Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli), authenticate, and create an app from this repository:

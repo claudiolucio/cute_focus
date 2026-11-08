@@ -5,6 +5,8 @@ defmodule CuteFocus.Focus do
   alias CuteFocus.Focus.{Activity, FocusSession}
   alias CuteFocus.Repo
 
+  @minimum_completed_seconds 45 * 60
+
   @default_activities [
     %{name: "Reading", sprite_key: "book", accent: "orange"},
     %{name: "Writing", sprite_key: "pen", accent: "yellow"},
@@ -19,11 +21,12 @@ defmodule CuteFocus.Focus do
     Repo.all(Activity) |> Enum.sort_by(& &1.id)
   end
 
-  def start_session(%Scope{} = scope, activity) do
+  def start_session(%Scope{} = scope, activity, target_duration_seconds) do
     %FocusSession{}
     |> FocusSession.changeset(%{
       started_at: now(),
       duration_seconds: 0,
+      target_duration_seconds: target_duration_seconds,
       status: "active"
     })
     |> Ecto.Changeset.put_change(:activity_id, activity.id)
@@ -32,10 +35,14 @@ defmodule CuteFocus.Focus do
   end
 
   def finish_session(session, duration_seconds) do
+    completed? =
+      session.target_duration_seconds > @minimum_completed_seconds and
+        duration_seconds >= session.target_duration_seconds
+
     session
     |> FocusSession.changeset(%{
       duration_seconds: duration_seconds,
-      status: "complete",
+      status: if(completed?, do: "complete", else: "incomplete"),
       ended_at: now()
     })
     |> Repo.update()

@@ -69,7 +69,7 @@ if config_env() == :prod do
 
   config :cute_focus, CuteFocus.Repo,
     url: database_url,
-    ssl: true,
+    ssl: System.get_env("DATABASE_SSL", "false") == "true",
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
 
   config :cute_focus, CuteFocus.Mailer,

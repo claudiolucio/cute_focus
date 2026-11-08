@@ -1,0 +1,11 @@
+.git
+.github
+_build
+deps
+cover
+tmp
+*.db
+*.db-*
+.env
+priv/static/assets
+priv/static/cache_manifest.json

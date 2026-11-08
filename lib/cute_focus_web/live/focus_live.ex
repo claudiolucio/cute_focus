@@ -3,7 +3,8 @@ defmodule CuteFocusWeb.FocusLive do
 
   alias CuteFocus.Focus
 
-  @focus_seconds 25 * 60
+  @default_duration_seconds 60 * 60
+  @maximum_duration_seconds 12 * 60 * 60
 
   @impl true
   def mount(_params, _session, socket) do
@@ -18,7 +19,9 @@ defmodule CuteFocusWeb.FocusLive do
         page_title: "liro study space for iza",
         selected_activity: selected_activity,
         activity_by_id: Map.new(activities, &{&1.id, &1}),
-        remaining_seconds: @focus_seconds,
+        remaining_seconds: @default_duration_seconds,
+        target_duration_seconds: @default_duration_seconds,
+        duration_form: duration_form(@default_duration_seconds),
         running?: false,
         session: nil
       )
@@ -50,7 +53,11 @@ defmodule CuteFocusWeb.FocusLive do
   end
 
   def handle_event("start", _params, socket) do
-    case Focus.start_session(socket.assigns.current_scope, socket.assigns.selected_activity) do
+    case Focus.start_session(
+           socket.assigns.current_scope,
+           socket.assigns.selected_activity,
+           socket.assigns.target_duration_seconds
+         ) do
       {:ok, session} ->
         {:noreply, assign(socket, running?: true, session: session)}
 
@@ -62,7 +69,31 @@ defmodule CuteFocusWeb.FocusLive do
   def handle_event("pause", _params, socket), do: {:noreply, save_and_stop(socket)}
 
   def handle_event("reset", _params, socket) do
-    {:noreply, socket |> save_and_stop() |> assign(remaining_seconds: @focus_seconds)}
+    {:noreply,
+     socket
+     |> save_and_stop()
+     |> assign(remaining_seconds: socket.assigns.target_duration_seconds)}
+  end
+
+  def handle_event("set_duration", %{"session" => params}, socket) do
+    socket = assign(socket, :duration_form, to_form(params, as: :session))
+
+    socket =
+      if socket.assigns.running? do
+        socket
+      else
+        case duration_from_params(params) do
+          {:ok, duration_seconds} ->
+            socket
+            |> assign(:target_duration_seconds, duration_seconds)
+            |> assign(:remaining_seconds, duration_seconds)
+
+          :error ->
+            socket
+        end
+      end
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -84,16 +115,48 @@ defmodule CuteFocusWeb.FocusLive do
   defp save_and_stop(%{assigns: %{session: nil}} = socket), do: assign(socket, running?: false)
 
   defp save_and_stop(socket) do
-    elapsed_seconds = @focus_seconds - socket.assigns.remaining_seconds
+    elapsed_seconds = socket.assigns.target_duration_seconds - socket.assigns.remaining_seconds
     _ = Focus.finish_session(socket.assigns.session, elapsed_seconds)
     assign(socket, running?: false, session: nil)
   end
 
   defp timer_text(seconds) do
-    "#{String.pad_leading(Integer.to_string(div(seconds, 60)), 2, "0")}:#{String.pad_leading(Integer.to_string(rem(seconds, 60)), 2, "0")}:00"
+    hours = div(seconds, 3_600)
+    minutes = div(rem(seconds, 3_600), 60)
+    remaining_seconds = rem(seconds, 60)
+
+    [hours, minutes, remaining_seconds]
+    |> Enum.map_join(":", &String.pad_leading(Integer.to_string(&1), 2, "0"))
   end
 
-  defp progress_width(seconds), do: round((@focus_seconds - seconds) / @focus_seconds * 100)
+  defp progress_width(remaining_seconds, target_duration_seconds) do
+    round((target_duration_seconds - remaining_seconds) / target_duration_seconds * 100)
+  end
+
+  defp duration_form(duration_seconds) do
+    to_form(
+      %{
+        "hours" => div(duration_seconds, 3_600),
+        "minutes" => div(rem(duration_seconds, 3_600), 60)
+      },
+      as: :session
+    )
+  end
+
+  defp duration_from_params(%{"hours" => hours, "minutes" => minutes}) do
+    with {hours, ""} <- Integer.parse(hours),
+         {minutes, ""} <- Integer.parse(minutes),
+         true <- hours in 0..12,
+         true <- minutes in 0..59,
+         duration_seconds = hours * 3_600 + minutes * 60,
+         true <- duration_seconds in 1..@maximum_duration_seconds do
+      {:ok, duration_seconds}
+    else
+      _ -> :error
+    end
+  end
+
+  defp duration_from_params(_params), do: :error
 
   defp pixel_sprite(assigns) do
     ~H"""
@@ -108,7 +171,10 @@ defmodule CuteFocusWeb.FocusLive do
     assigns =
       assigns
       |> assign(:timer_text, timer_text(assigns.remaining_seconds))
-      |> assign(:progress_width, progress_width(assigns.remaining_seconds))
+      |> assign(
+        :progress_width,
+        progress_width(assigns.remaining_seconds, assigns.target_duration_seconds)
+      )
 
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
@@ -153,6 +219,36 @@ defmodule CuteFocusWeb.FocusLive do
                 </div>
               </div>
             </div>
+            <.form
+              for={@duration_form}
+              id="duration-form"
+              phx-change="set_duration"
+              class="mt-5 border-t border-[#2c2a27] pt-5"
+            >
+              <div class="flex items-end gap-3">
+                <.input
+                  field={@duration_form[:hours]}
+                  type="number"
+                  min="0"
+                  max="12"
+                  label="Hours"
+                  disabled={@running?}
+                  class="w-full rounded-xl border border-[#4a4540] bg-[#1e1e1e] px-3 py-2 text-sm font-bold text-[#f5f1e9]"
+                />
+                <.input
+                  field={@duration_form[:minutes]}
+                  type="number"
+                  min="0"
+                  max="59"
+                  label="Minutes"
+                  disabled={@running?}
+                  class="w-full rounded-xl border border-[#4a4540] bg-[#1e1e1e] px-3 py-2 text-sm font-bold text-[#f5f1e9]"
+                />
+              </div>
+              <p class="mt-3 text-[10px] leading-4 text-[#8e8980]">
+                Finish the full time to complete it. Only sessions longer than 45 minutes count toward progress.
+              </p>
+            </.form>
             <div class="mt-5 grid grid-cols-3 gap-2">
               <button
                 id="start-focus"
