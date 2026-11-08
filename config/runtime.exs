@@ -46,11 +46,18 @@ if config_env() == :dev do
 end
 
 if config_env() == :prod do
-  resend_api_key =
-    System.get_env("RESEND_API_KEY") ||
+  smtp_username =
+    System.get_env("SMTP_USERNAME") ||
       raise """
-      environment variable RESEND_API_KEY is missing.
-      Create a sending-only Resend API key and configure it in Heroku.
+      environment variable SMTP_USERNAME is missing.
+      Configure the Gmail address used to send authentication emails.
+      """
+
+  smtp_password =
+    System.get_env("SMTP_PASSWORD") ||
+      raise """
+      environment variable SMTP_PASSWORD is missing.
+      Configure a Gmail app password for authentication emails.
       """
 
   database_url =
@@ -65,15 +72,18 @@ if config_env() == :prod do
     ssl: true,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
 
-  config :swoosh, :api_client, Swoosh.ApiClient.Req
-
   config :cute_focus, CuteFocus.Mailer,
-    adapter: Swoosh.Adapters.Resend,
-    api_key: resend_api_key
+    adapter: Swoosh.Adapters.SMTP,
+    relay: "smtp.gmail.com",
+    username: smtp_username,
+    password: smtp_password,
+    port: 587,
+    tls: :always,
+    auth: :always
 
   config :cute_focus,
          :mailer_from,
-         {"CuteFocus", System.get_env("MAILER_FROM", "onboarding@resend.dev")}
+         {"CuteFocus", System.get_env("MAILER_FROM", smtp_username)}
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

@@ -45,14 +45,16 @@ heroku config:set OPENAI_API_KEY="your-key" --app cute-focus
 
 ### Email authentication
 
-Production sends registration and login links through [Resend](https://resend.com). Configure a sending-only API key and sender address before deploying:
+Production sends registration and login links through Gmail SMTP. Enable two-step verification on the Gmail account, then create a [Google app password](https://myaccount.google.com/apppasswords). Configure it through the Heroku CLI:
 
 ```bash
-heroku config:set RESEND_API_KEY="your-sending-key" --app cute-focus
-heroku config:set MAILER_FROM="noreply@mail.example.com" --app cute-focus
+heroku config:set SMTP_USERNAME="your-email@gmail.com" MAILER_FROM="your-email@gmail.com" --app cute-focus
+read -rs smtp_password
+heroku config:set SMTP_PASSWORD="$smtp_password" --app cute-focus >/dev/null
+unset smtp_password
 ```
 
-Until a sending domain is verified in Resend, use `MAILER_FROM="onboarding@resend.dev"` only to test delivery to the email address associated with the Resend account.
+The `read` command waits for the app password without displaying it. Press Enter after entering the 16-character password.
 
 Commit the changes and deploy:
 
